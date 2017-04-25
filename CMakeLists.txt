@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.7)
+project(calc-tiulpin)
+set(CMAKE_C_STANDARD 90)
+set(SOURCE_FILES main.c calc.h calc.c other.h other.c data.c data.h)
+add_executable(calc-tiulpin ${SOURCE_FILES})
+target_link_libraries(calc-tiulpin m)
