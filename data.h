@@ -7,10 +7,10 @@
 #include <stdlib.h>
 
 typedef struct {
-    error_t Error;
-    double *data_;
-    int size_;
-    int top_;
+  error_t Error;
+  double *data_;
+  int size_;
+  int top_;
 } stack_t;
 
 char *stExp(char *p_expression, int *endptr, stack_t *stack);

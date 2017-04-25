@@ -9,12 +9,12 @@
 #include "stdlib.h"
 
 typedef enum {
-    ERR_OK,
-    ERR_NOT_ENOUGH_MEMORY,
-    ERR_WRONG_EXPRESSION,
-    ERR_MEMORY_LEAKS,
-    ERR_NOT_DEFINED,
-    ERR_BRACKETS,
+  ERR_OK,
+  ERR_NOT_ENOUGH_MEMORY,
+  ERR_WRONG_EXPRESSION,
+  ERR_MEMORY_LEAKS,
+  ERR_NOT_DEFINED,
+  ERR_BRACKETS,
 } error_t;
 
 char const *GetErrorString(error_t error);
