@@ -1,4 +1,4 @@
-# Калькулятор 0.3.0 (S2)
+# Калькулятор 0.3 (S2)
 
 В качестве курсового проекта требуется написать программу — калькулятор,
 умеющий вычислять значение арифметических выражений, которые задаются
@@ -12,7 +12,7 @@
 
 [other.h](https://github.com/iamm-pro/calc-tiulpin/blob/master/other.h) | [calc.h](https://github.com/iamm-pro/calc-tiulpin/blob/master/calc.h) | [data.h](https://github.com/iamm-pro/calc-tiulpin/blob/master/data.h)
 ```
-Google code style.
+AM code style.
 stage00:
 - ок, идём дальше
 stage01:
