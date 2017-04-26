@@ -28,4 +28,4 @@ stage03:
 - возможная причина - проблемы с унарным минусом, проверьте 3.3.1
 - на тесте № 8 (строка 11)
 ```
-[Clone](https://github.com/iamm-pro/calc-tiulpin/archive/master.zip)
+`[Clone](https://github.com/iamm-pro/calc-tiulpin/archive/master.zip)`
