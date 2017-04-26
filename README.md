@@ -9,9 +9,8 @@
 * [other.c](https://github.com/iamm-pro/calc-tiulpin/blob/master/other.c) - модуль вспомогательных функций
 * [calc.c](https://github.com/iamm-pro/calc-tiulpin/blob/master/calc.c) - модуль калькулятора выражений
 * [main.c](https://github.com/iamm-pro/calc-tiulpin/blob/master/main.c) - функция main
-* [other.h](https://github.com/iamm-pro/calc-tiulpin/blob/master/other.h)
-* [data.h](https://github.com/iamm-pro/calc-tiulpin/blob/master/data.h) 
-* [calc.h](https://github.com/iamm-pro/calc-tiulpin/blob/master/calc.h)
+
+[other.h](https://github.com/iamm-pro/calc-tiulpin/blob/master/other.h) | [calc.h](https://github.com/iamm-pro/calc-tiulpin/blob/master/calc.h) | [data.h](https://github.com/iamm-pro/calc-tiulpin/blob/master/data.h)
 ```
 Google code style.
 stage00:
