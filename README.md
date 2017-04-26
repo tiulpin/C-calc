@@ -5,7 +5,7 @@
 пользователем в виде строки текста: `"3 * 2.5 / (2 + 2 * 7)"`.
 Полное условие задания с актуальными изменениями доступно по ссылке:
 [Калькулятор выражений](https://sites.google.com/site/yap1057/ii-semestr/kursovik).
-* [data.c](https://github.com/iamm-pro/calc-tiulpin/blob/master/data.c) - модуль работы со стэком и обработки выражения в обратную польскую нотацию
+* [data.c](https://github.com/iamm-pro/calc-tiulpin/blob/master/data.c) - модуль работы со стеком и обработки выражения в обратную польскую нотацию
 * [other.c](https://github.com/iamm-pro/calc-tiulpin/blob/master/other.c) - модуль вспомогательных функций
 * [calc.c](https://github.com/iamm-pro/calc-tiulpin/blob/master/calc.c) - модуль калькулятора выражений
 * [main.c](https://github.com/iamm-pro/calc-tiulpin/blob/master/main.c) - функция main
