@@ -3,8 +3,7 @@
 //
 #include "other.h"
 #include "calc.h"
-
-const char const *error_list[] = {
+const char const* error_list[] = {
     "OK",
     "NOT ENOUGH MEMORY",
     "WRONG EXPRESSION",
@@ -12,70 +11,92 @@ const char const *error_list[] = {
     "NOT DEFINED",
     "BRACKETS"
 };
-
-int isOperator(char c) {
+int IsOperator(char c)
+{
   return (c == '+' || c == '-') || (c == '*' || c == '/') || (c == '(' || c == ')') || (c == '^');
 }
-
-char *ReadLine(FILE *in, error_t *lastError) {
-  char *buffer = NULL;
-  char *line = (char *) malloc(sizeof(char));
+char* ReadLine(FILE* in, error_t* lastError)
+{
+  char* buffer = NULL;
+  char* line = (char*) malloc(sizeof(char));
   int i = 0;
   line[i] = (char) fgetc(in);
-  if (line[i] == EOF) {
+  if (line[i] == EOF)
+  {
     free(line);
     return NULL;
   }
-  while ((line[i] != '\n')) {
+  while ((line[i] != '\n'))
+  {
     if (line[i] == EOF)
+    {
       break;
+    }
     i++;
-    buffer = (char *) realloc(line, sizeof(char) * (i + 1));
-    if (buffer == NULL) {
+    buffer = (char*) realloc(line, sizeof(char) * (i + 1));
+    if (buffer == NULL)
+    {
       *lastError = ERR_NOT_ENOUGH_MEMORY;
       return line;
-    } else line = buffer;
+    }
+    else
+    {
+      line = buffer;
+    }
     line[i] = (char) fgetc(in);
   }
   line[i] = '\0';
-  if ((NeedCalculate(line)) && (isOperator(line[i])) && (line[i - 1] != ')'))
+  if ((NeedCalculate(line)) && (IsOperator(line[i])) && (line[i - 1] != ')'))
+  {
     *lastError = ERR_WRONG_EXPRESSION;
+  }
   return line;
 }
-
-int NeedCalculate(char const *line) {
+int NeedCalculate(char const* line)
+{
   int i = 0;
-  for (i; ((line[i] != '\0') && !(isOperator(line[i])) && !(isalnum(line[i]))); i++);
-  if (line[i] == '\0') return 0;
-  if (line[i] == '/' && line[i + 1] == '/')
+  for (i; ((line[i] != '\0') && !(IsOperator(line[i])) && !(isalnum(line[i]))); i++);
+  if (line[i] == '\0')
+  {
     return 0;
+  }
+  if (line[i] == '/' && line[i + 1] == '/')
+  {
+    return 0;
+  }
   for (i; line[i] != '\0'; i++)
-    if (isOperator(line[i]) || isalnum(line[i]))
+    if (IsOperator(line[i]) || isalnum(line[i]))
+    {
       return 1;
+    }
   return 0;
 }
-
-void ProcessLine(char const *line, error_t *lastError) {
-  if (!NeedCalculate(line)) {
+void ProcessLine(char const* line, error_t* lastError)
+{
+  if (!NeedCalculate(line))
+  {
     puts(line);
     return;
   }
   printf("%s == ", line);
   double result = Calculate(line, lastError);
   if (*lastError == ERR_OK)
+  {
     printf("%lg\n", result);
-  else {
+  }
+  else
+  {
     ReportError(*lastError);
     *lastError = ERR_OK;
   }
   *lastError = ERR_OK;
 }
-
-error_t ReportError(error_t error) {
+error_t ReportError(error_t error)
+{
   printf("ERROR: %s\n", GetErrorString(error));
   return error;
 }
-
-char const *GetErrorString(error_t error) {
+char const* GetErrorString(error_t error)
+{
   return error_list[error];
 }

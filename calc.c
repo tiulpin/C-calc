@@ -2,71 +2,87 @@
 // Created by tiulpin on 23.04.17.
 //
 #include "calc.h"
-
-double Sum(double a, double b) {
+const double pi = 3.1415926535897932384626;
+const double e = 2.71828182845904523536;
+const double eps = 1e-12;
+const double EPS = 1e12;
+double Sum(double a, double b)
+{
   return (a + b);
 }
-
-double Sub(double a, double b) {
+double Sub(double a, double b)
+{
   return (a - b);
 }
-
-double Mul(double a, double b) {
+double Mul(double a, double b)
+{
   return (a * b);
 }
-
-double Div(double a, double b) {
+double Div(double a, double b)
+{
   return (a / b);
 }
-
-double Calculate(char const *expression, error_t *error) {//Check brackets
+double Calculate(char const* expression, error_t* error)
+{
   double result;
-  char *p_expression = rpn(expression);
+  char* p_expression = Convert(expression);
   if (*error != ERR_OK)
+  {
     return 0.0;
-  stack_t *stack = initializeStack();
-  double (*p)(double, double) = NULL;
-  double arg;
-  char *n;
-  int i;
-  int j;
-  for (i = 0; p_expression[i = skipSpaces((char const *) p_expression, i)] != '\0'; i++) {
-    if (isOperator(p_expression[i])) {
-      switch (p_expression[i]) {
-        case '+':p = &Sum;
-          break;
-        case '-':p = &Sub;
-          break;
-        case '*':p = &Mul;
-          break;
-        case '/':p = &Div;
-          break;
-        case '^':p = &pow;
-          break;
-        default:p = &Sum;
-          break;
+  }
+  stack_t* stack = InitializeStack();
+  double (* operation)(double, double) = NULL;
+  int start;
+  int end;
+  char* n;
+  for (start = 0; p_expression[start = SkipSpaces((char const*) p_expression, start)] != '\0'; start++)
+  {
+    if (IsOperator(p_expression[start]))
+    {
+      switch (p_expression[start])
+      {
+      case '+':
+        operation = &Sum;
+        break;
+      case '-':
+        operation = &Sub;
+        break;
+      case '*':
+        operation = &Mul;
+        break;
+      case '/':
+        operation = &Div;
+        break;
+      case '^':
+        operation = &pow;
+        break;
+      default:
+        operation = &Sum;
+        break;
       }
-      arg = p(pop(stack), pop(stack));
-      append(stack, arg);
-    } else if (isalnum(p_expression[i])) {
+      Append(stack, operation(Pop(stack), Pop(stack)));
+    }
+    else if (isalnum(p_expression[start]))
+    {
       n = malloc(sizeof(char));
-      j = 0;
-      do {
-        n[j] = p_expression[i];
-        j++;
-        i++;
-        n = realloc(n, sizeof(char) * (j + 1));
-      } while (isalnum(p_expression[i])); //double?
-      n[j] = '\0';
-      arg = atof((const char *) n);
-      append(stack, arg);
+      end = 0;
+      do
+      {
+        n[end++] = p_expression[start++];
+        n = realloc(n, sizeof(char) * (end + 1));
+      } while (isalnum(p_expression[start]) || p_expression[start] == '.');
+      n[end] = '\0';
+      Append(stack, atof((const char*) n));
       free(n);
-      i--;
+      start--;
     }
   }
-  result = pop(stack);
-  removeStack(stack);
+  result = Pop(stack);
+  RemoveStack(stack);
   free(p_expression);
-  if (result == -0.0 || *error != ERR_OK) result = 0.0; //Check errors
+  if (result == -0.0 || *error != ERR_OK)
+  {
+    result = 0.0;
+  } //Check errors
   return result;
 }
