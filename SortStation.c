@@ -9,7 +9,10 @@ int IsUnaryOp(enum Op op)
 char* ReadOp(const char* string, int* index, int IsOperation)
 {
   int j = 0;
-  char* copy = (char*) malloc(sizeof(char));
+  int was_e = 0;
+  int was_p = 0;
+  int was_s = 0;
+  char* copy = malloc(sizeof(char));
   if (IsOperation)
   {
     if (string[*index] == '-')
@@ -17,7 +20,7 @@ char* ReadOp(const char* string, int* index, int IsOperation)
       while (string[*index] == '-')
       {
         copy[j] = string[(*index)++];
-        copy = (char*) realloc(copy, sizeof(char) * (++j + 1));
+        copy = realloc(copy, sizeof(char) * (++j + 1));
       }
     }
     else
@@ -25,7 +28,7 @@ char* ReadOp(const char* string, int* index, int IsOperation)
       while (isalpha(string[*index]))
       {
         copy[j] = string[(*index)++];
-        copy = (char*) realloc(copy, sizeof(char) * (++j + 1));
+        copy = realloc(copy, sizeof(char) * (++j + 1));
       }
     }
   }
@@ -33,8 +36,36 @@ char* ReadOp(const char* string, int* index, int IsOperation)
     while (isdigit(string[*index]) || string[*index] == '.' || string[*index] == 'e' || string[*index] == '+'
         || string[*index] == '-')
     {
+      if (was_e && (!isdigit(string[*index]) && string[*index] != '+' && string[*index] != '-') ||
+          !was_e && (!isdigit(string[*index]) && string[*index] != '.' && string[*index] != 'e'))
+      {
+        free(copy);
+        return NULL;
+      }
       copy[j] = string[(*index)++];
-      copy = (char*) realloc(copy, sizeof(char) * (++j) + 1);
+      if (copy[j] == 'e')
+        if (!was_e)
+          was_e = 1;
+        else
+        {
+          free(copy);
+          return NULL;
+        }
+      else if (copy[j] == '.')
+        if (!was_p)
+          was_p = 1;
+        else
+        {
+          free(copy);
+          return NULL;
+        }
+      else if (copy[j] == '+' || copy[j] == '-')
+        was_s = 1;
+      copy = realloc(copy, sizeof(char) * (++j) + 1);
+      if (was_e && was_s && !isdigit(string[*index]))
+        break;
+      if (!was_e && !(isdigit(string[*index])) && string[*index] != 'e' && string[*index] != '.')
+        break;
     }
   copy[j] = 0;
   (*index)--;
@@ -171,7 +202,7 @@ void Process(struct stack_t* operands, struct opstack_t* operations, error_t* la
   else
     *lastError = ERR_WRONG_EXPRESSION;
 }
-node_t Convert(const char* string, error_t* lastError)
+node_t Convert(char* string, error_t* lastError)
 {
   struct opstack_t* operations = InitOperations();
   struct stack_t* operands = InitOperands();
@@ -180,7 +211,7 @@ node_t Convert(const char* string, error_t* lastError)
   char* copy;
   int index;
   int* indexptr = &index;
-  for (index = 0; string[index] != 0 || *lastError != ERR_OK; ++index)
+  for (index = 0; string[index] != 0 && *lastError == ERR_OK; ++index)
     if (isgraph(string[index]))
     {
       if (string[index] == '(')
@@ -191,16 +222,16 @@ node_t Convert(const char* string, error_t* lastError)
       else if (string[index] == ')')
         if (operands->depth_ && IsOPAR(operations))
         {
-          while ((operations->depth_ != 0) && (Back(operations) != OPAR
-              || (operations->depth_ > 1) && IsUnaryOp(operations->elements_[operations->depth_ - 2])
-                  && Back(operations) == OPAR))
-          {
-            if ((operations->depth_ > 1) && IsUnaryOp(operations->elements_[operations->depth_ - 2])
-                && Back(operations) == OPAR)
-              Pop_op(operations);
+          while ((operations->depth_ != 0) && (Back(operations) != OPAR))
             Process(operands, operations, lastError);
+          if ((operations->depth_ > 1) && IsUnaryOp(operations->elements_[operations->depth_ - 2])
+              && Back(operations) == OPAR)
+          {
+            Pop_op(operations);
+            Process(operands, operations, lastError);
+            mayunary = 1;
           }
-          if ((operations->depth_ != 0) && Back(operations) == OPAR)
+          if (!mayunary && (operations->depth_ != 0) && Back(operations) == OPAR)
             Pop_op(operations);
           mayunary = 0;
         }
@@ -225,7 +256,7 @@ node_t Convert(const char* string, error_t* lastError)
         {
           if (string[index] == '+')
             continue;
-          copy = ReadOp((char*) string, indexptr, 1);
+          copy = ReadOp(string, indexptr, 1);
           cur_op = DefineUnaryOp(copy);
           free(copy);
           if (cur_op == INVALID)
@@ -234,7 +265,14 @@ node_t Convert(const char* string, error_t* lastError)
           }
         }
         else
+        {
           cur_op = DefineBinaryOp(string[index]);
+          if (cur_op == INVALID)
+          {
+            *lastError = ERR_WRONG_EXPRESSION;
+            break;
+          }
+        }
         while ((operations->depth_ && operands->depth_) &&
             (!(IsUnaryOp(cur_op) || cur_op == BEXP) && GetPriority(Back(operations)) >= GetPriority(cur_op)
                 || (IsUnaryOp(cur_op) && Back(operations) != BEXP || cur_op == BEXP)
@@ -257,9 +295,9 @@ node_t Convert(const char* string, error_t* lastError)
           *lastError = ERR_WRONG_EXPRESSION;
       }
       else
-        break;
+        *lastError = ERR_WRONG_EXPRESSION;
     }
-  free((char*) string);
+  free(string);
   while (operations->depth_)
     Process(operands, operations, lastError);
   if (*lastError == ERR_OK && operands->depth_ == 1 && operations->depth_ == 0)

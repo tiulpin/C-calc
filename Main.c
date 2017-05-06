@@ -11,7 +11,11 @@ int main(int argc, char const* argv[])
     return -1;
   }
   while ((line = ReadLine(in, &lastError)) != NULL)
+  {
     ProcessLine(line, &lastError);
+    free(line);
+  }
+
   if (in != stdin)
     fclose(in);
   return 0;

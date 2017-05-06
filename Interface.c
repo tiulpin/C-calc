@@ -15,7 +15,7 @@ int IsOperator(char op)
 {
   return op == '+' || op == '-' || op == '*' || op == '/' || op == '^' || isalpha(op);
 }
-int NeedCalculate(char const* line)
+int NeedCalculate(char* line)
 {
   int i = 0;
   for (i; ((line[i] != '\0') && !(IsOperator(line[i])) && !(isalnum(line[i]))); i++);
@@ -34,18 +34,16 @@ int NeedCalculate(char const* line)
     }
   return 0;
 }
-const char* Normalize(char* line)
+char* Normalize(char* line)
 {
   char* copy = (char*) malloc(strlen(line) + 1);
   int index;
   for (index = 0; line[index] != 0; index++)
     copy[index] = (char) tolower(line[index]);
   copy[index] = 0;
-  free(line);
-  line = copy;
-  return line;
+  return copy;
 }
-/////////////////////////////////////////////
+//TODO: do it again!
 char* ReadLine(FILE* in, error_t* lastError)
 {
   char* buffer = NULL;
@@ -84,7 +82,7 @@ char* ReadLine(FILE* in, error_t* lastError)
   return line;
 }
 /////////////////////////////////////////////
-void ProcessLine(const char* line, error_t* lastError)
+void ProcessLine(char* line, error_t* lastError)
 {
   int i;
   double result = 0;
@@ -95,7 +93,7 @@ void ProcessLine(const char* line, error_t* lastError)
     return;
   }
   printf("%s == ", line);
-  line = Normalize((char*) line);
+  line = Normalize(line);
   node_t expression = Convert(line, lastError);
   if (expression)
   {
@@ -115,8 +113,6 @@ void ProcessLine(const char* line, error_t* lastError)
   else
   {
     ReportError(*lastError);
-    if (expression)
-      Free(expression);
     *lastError = ERR_OK;
   }
 }
