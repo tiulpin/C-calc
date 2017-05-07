@@ -25,29 +25,33 @@ double pos(double only)
 }
 double ctg(double only)
 {
-  return (1 / tan(only));
+  return (cos(only) / sin(only));
 }
-double Calculate(node_t node)
+double (* UOPS[])(double) = {
+    neg, pos, sqrt,
+    sin, cos, tan,
+    ctg, asin, acos,
+    atan, log, floor,
+    ceil
+};
+double (* BOPS[])(double, double) = {
+    pow,
+    mul,
+    din,
+    sum,
+    sub
+};
+double Calculate(node_t node, error_t* lastError)
 {
-  double (* UOPS[])(double) = {
-      neg, pos, sqrt,
-      sin, cos, tan,
-      ctg, asin, acos,
-      atan, log, floor,
-      ceil
-  };
-  double (* BOPS[])(double, double) = {
-      pow,
-      mul,
-      din,
-      sum,
-      sub
-  };
-  if (node->type_ == NUM)
+  if (node->type_ == NUM && *lastError == ERR_OK)
+  {
+    if (isinf(node->number_) || isnan(node->number_))
+      *lastError = ERR_INF_NAN;
     return node->number_;
-  if (node->type_ == B_OP)
-    return BOPS[node->bin_ - 1](Calculate(node->left), Calculate(node->right));
-  else if (node->type_ == U_OP)
-    return UOPS[node->un_ - 1](Calculate(node->only));
+  }
+  if (node->type_ == B_OP && *lastError == ERR_OK)
+    return BOPS[node->bin_](Calculate(node->left, lastError), Calculate(node->right, lastError));
+  else if (node->type_ == U_OP && *lastError == ERR_OK)
+    return UOPS[node->un_](Calculate(node->only, lastError));
   return NAN;
 }

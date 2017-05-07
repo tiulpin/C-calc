@@ -4,7 +4,15 @@
 const char const* error_list[] = {
     "OK",
     "NOT ENOUGH MEMORY",
-    "WRONG EXPRESSION"
+    "WRONG EXPRESSION",
+    "INVALID_OP_PROCESSING",
+    "CHECK BRACKETS",
+    "INVALID BINARY OPERATION",
+    "WRONG NUMBER",
+    "INF/NAN",
+    "INCORRECT CONVERT",
+    "INVALID UNARY OPERATION",
+    "INCORRECT SCIENTIFIC NOTATION",
 };
 error_t ReportError(error_t error)
 {
@@ -15,28 +23,13 @@ int IsOperator(char op)
 {
   return op == '+' || op == '-' || op == '*' || op == '/' || op == '^' || isalpha(op);
 }
-int NeedCalculate(char* line)
-{
-  int i = 0;
-  for (i; ((line[i] != '\0') && !(IsOperator(line[i])) && !(isalnum(line[i]))); i++);
-  if (line[i] == '\0')
-  {
-    return 0;
-  }
-  if (line[i] == '/' && line[i + 1] == '/')
-  {
-    return 0;
-  }
-  for (i; line[i] != '\0'; i++)
-    if (IsOperator(line[i]) || isalnum(line[i]))
-    {
-      return 1;
-    }
-  return 0;
-}
 char* Normalize(char* line)
 {
   char* copy = (char*) malloc(strlen(line) + 1);
+  if (copy == NULL)
+  {
+    return NULL;
+  }
   int index;
   for (index = 0; line[index] != 0; index++)
     copy[index] = (char) tolower(line[index]);
@@ -44,10 +37,16 @@ char* Normalize(char* line)
   return copy;
 }
 //TODO: do it again!
+//////////////////////////////////////////////////////////
 char* ReadLine(FILE* in, error_t* lastError)
 {
   char* buffer = NULL;
   char* line = (char*) malloc(sizeof(char));
+  if (line == NULL)
+  {
+    *lastError = ERR_NOT_ENOUGH_MEMORY;
+    return NULL;
+  }
   int i = 0;
   line[i] = (char) fgetc(in);
   if (line[i] == EOF)
@@ -65,6 +64,7 @@ char* ReadLine(FILE* in, error_t* lastError)
     buffer = (char*) realloc(line, sizeof(char) * (i + 1));
     if (buffer == NULL)
     {
+      line[i] = '\0';
       *lastError = ERR_NOT_ENOUGH_MEMORY;
       return line;
     }
@@ -75,17 +75,14 @@ char* ReadLine(FILE* in, error_t* lastError)
     line[i] = (char) fgetc(in);
   }
   line[i] = '\0';
-  if ((NeedCalculate(line)) && (IsOperator(line[i])) && (line[i - 1] != ')'))
-  {
-    *lastError = ERR_WRONG_EXPRESSION;
-  }
   return line;
 }
-/////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 void ProcessLine(char* line, error_t* lastError)
 {
   int i;
   double result = 0;
+  node_t expression = NULL;
   for (i = 0; line[i] != 0 && isspace(line[i]); i++);
   if ((line[i] == '/' && line[i + 1] == '/') || line[i] == '\0')
   {
@@ -94,16 +91,17 @@ void ProcessLine(char* line, error_t* lastError)
   }
   printf("%s == ", line);
   line = Normalize(line);
-  node_t expression = Convert(line, lastError);
+  if (*lastError == ERR_OK)
+    expression = Convert(line, lastError);
   if (expression)
   {
-    result = Calculate(expression);
-    if (result != result || *lastError != ERR_OK || isinf(result))
-      *lastError = ERR_WRONG_EXPRESSION;
+    result = Calculate(expression, lastError);
+    if (result != result || isinf(result))
+      *lastError = ERR_INF_NAN;
     Free(expression);
   }
-  else
-    *lastError = ERR_WRONG_EXPRESSION;
+  else if (*lastError == ERR_OK)
+    *lastError = ERR_INCORRECT_CONVERT;
   if (*lastError == ERR_OK)
   {
     if (result == -0)

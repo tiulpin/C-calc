@@ -6,13 +6,22 @@ int IsUnaryOp(enum Op op)
 {
   return (ToBinary_op(op) == B_OP_INVALID && op != OPAR);
 }
-char* ReadOp(const char* string, int* index, int IsOperation)
+//TODO: do it again!
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char* ReadOp(const char* string, int* index, int IsOperation, error_t* lastError)
 {
   int j = 0;
   int was_e = 0;
-  int was_p = 0;
   int was_s = 0;
+  int was_d = 0;
   char* copy = malloc(sizeof(char));
+  if (copy == NULL)
+  {
+    *lastError = ERR_NOT_ENOUGH_MEMORY;
+    return NULL;
+  }
+  if (string[*index] == '.' && (!isdigit(string[*index + 1]) || string[*index + 1] == '\0'))
+    *lastError = ERR_SC_NOTATION;
   if (IsOperation)
   {
     if (string[*index] == '-')
@@ -21,6 +30,11 @@ char* ReadOp(const char* string, int* index, int IsOperation)
       {
         copy[j] = string[(*index)++];
         copy = realloc(copy, sizeof(char) * (++j + 1));
+        if (copy == NULL)
+        {
+          *lastError = ERR_NOT_ENOUGH_MEMORY;
+          return NULL;
+        }
       }
     }
     else
@@ -29,48 +43,59 @@ char* ReadOp(const char* string, int* index, int IsOperation)
       {
         copy[j] = string[(*index)++];
         copy = realloc(copy, sizeof(char) * (++j + 1));
+        if (copy == NULL)
+        {
+          *lastError = ERR_NOT_ENOUGH_MEMORY;
+          return NULL;
+        }
       }
     }
   }
   else
-    while (isdigit(string[*index]) || string[*index] == '.' || string[*index] == 'e' || string[*index] == '+'
-        || string[*index] == '-')
+    while ((isdigit(string[*index]) || string[*index] == '.' || string[*index] == 'e' || string[*index] == '+'
+        || string[*index] == '-') && *lastError == ERR_OK)
     {
       if (was_e && (!isdigit(string[*index]) && string[*index] != '+' && string[*index] != '-') ||
           !was_e && (!isdigit(string[*index]) && string[*index] != '.' && string[*index] != 'e'))
-      {
-        free(copy);
-        return NULL;
-      }
+        *lastError = ERR_SC_NOTATION;
       copy[j] = string[(*index)++];
       if (copy[j] == 'e')
+      {
         if (!was_e)
           was_e = 1;
         else
-        {
-          free(copy);
-          return NULL;
-        }
+          *lastError = ERR_SC_NOTATION;
+        if (was_d && copy[j - 1] == '.')
+          *lastError = ERR_SC_NOTATION;
+      }
       else if (copy[j] == '.')
-        if (!was_p)
-          was_p = 1;
+        if (!was_d)
+          was_d = 1;
         else
-        {
-          free(copy);
-          return NULL;
-        }
+          *lastError = ERR_SC_NOTATION;
       else if (copy[j] == '+' || copy[j] == '-')
         was_s = 1;
       copy = realloc(copy, sizeof(char) * (++j) + 1);
+      if (copy == NULL)
+      {
+        *lastError = ERR_NOT_ENOUGH_MEMORY;
+        return NULL;
+      }
       if (was_e && was_s && !isdigit(string[*index]))
         break;
       if (!was_e && !(isdigit(string[*index])) && string[*index] != 'e' && string[*index] != '.')
         break;
+      else if (isdigit(copy[j - 1]) && was_e && (string[*index] != '+' || string[*index] != '-')
+          && !isdigit(string[*index]))
+        break;
     }
   copy[j] = 0;
+  if (was_e && !isdigit(copy[j - 1]))
+    *lastError = ERR_SC_NOTATION;
   (*index)--;
   return copy;
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int GetPriority(enum Op op)
 {
   return op == OPAR ? -1 :
@@ -147,6 +172,12 @@ enum Op DefineBinaryOp(char op)
 }
 enum Op DefineUnaryOp(char* op)
 {
+  char* list[] = {
+      "sqrt", "sin", "cos",
+      "tg", "ctg", "arcsin",
+      "arccos", "arctg", "ln", "floor", "ceil"};
+  if (op == NULL)
+    return INVALID;
   if (*op == '+')
     return POS;
   if (*op == '-')
@@ -155,27 +186,27 @@ enum Op DefineUnaryOp(char* op)
       return NEG;
     return POS;
   }
-  if (strcmp(op, "sqrt") == 0)
+  if (strcmp(op, list[0]) == 0)
     return SQRT;
-  if (strcmp(op, "sin") == 0)
+  if (strcmp(op, list[1]) == 0)
     return SIN;
-  if (strcmp(op, "cos") == 0)
+  if (strcmp(op, list[2]) == 0)
     return COS;
-  if (strcmp(op, "tg") == 0)
+  if (strcmp(op, list[3]) == 0)
     return TAN;
-  if (strcmp(op, "ctg") == 0)
+  if (strcmp(op, list[4]) == 0)
     return CTG;
-  if (strcmp(op, "arcsin") == 0)
+  if (strcmp(op, list[5]) == 0)
     return ASIN;
-  if (strcmp(op, "arccos") == 0)
+  if (strcmp(op, list[6]) == 0)
     return ACOS;
-  if (strcmp(op, "arctg") == 0)
+  if (strcmp(op, list[7]) == 0)
     return ATAN;
-  if (strcmp(op, "ln") == 0)
+  if (strcmp(op, list[8]) == 0)
     return LN;
-  if (strcmp(op, "floor") == 0)
+  if (strcmp(op, list[9]) == 0)
     return FLOOR;
-  if (strcmp(op, "ceil") == 0)
+  if (strcmp(op, list[10]) == 0)
     return CEIL;
   return INVALID;
 }
@@ -200,7 +231,7 @@ void Process(struct stack_t* operands, struct opstack_t* operations, error_t* la
     Append(operands, new_node);
   }
   else
-    *lastError = ERR_WRONG_EXPRESSION;
+    *lastError = ERR_INVALID_OP_PROCESSING;
 }
 node_t Convert(char* string, error_t* lastError)
 {
@@ -236,7 +267,7 @@ node_t Convert(char* string, error_t* lastError)
           mayunary = 0;
         }
         else
-          *lastError = ERR_WRONG_EXPRESSION;
+          *lastError = ERR_BRACKETS;
       else if (IsOperator(string[index]))
       {
         if (string[index + 1] != 0 && (string[index] == 'p' && string[index + 1] == 'i'))
@@ -256,11 +287,14 @@ node_t Convert(char* string, error_t* lastError)
         {
           if (string[index] == '+')
             continue;
-          copy = ReadOp(string, indexptr, 1);
+          copy = ReadOp(string, indexptr, 1, lastError);
+          if (copy == NULL)
+            break;
           cur_op = DefineUnaryOp(copy);
           free(copy);
           if (cur_op == INVALID)
           {
+            *lastError = ERR_INVALID_U_OP;
             break;
           }
         }
@@ -269,7 +303,7 @@ node_t Convert(char* string, error_t* lastError)
           cur_op = DefineBinaryOp(string[index]);
           if (cur_op == INVALID)
           {
-            *lastError = ERR_WRONG_EXPRESSION;
+            *lastError = ERR_INVALID_B_OP;
             break;
           }
         }
@@ -283,8 +317,8 @@ node_t Convert(char* string, error_t* lastError)
       }
       else if (isdigit(string[index]) || string[index] == '.')
       {
-        copy = ReadOp(string, indexptr, 0);
-        if (copy)
+        copy = ReadOp(string, indexptr, 0, lastError);
+        if (*lastError == ERR_OK)
         {
           node_t number = Num(atof(copy));
           free(copy);
@@ -292,10 +326,19 @@ node_t Convert(char* string, error_t* lastError)
           mayunary = 0;
         }
         else
-          *lastError = ERR_WRONG_EXPRESSION;
+        {
+          if (copy != NULL)
+            free(copy);
+          if (*lastError == ERR_OK)
+            *lastError = ERR_READING_NUM;
+        }
+
       }
       else
-        *lastError = ERR_WRONG_EXPRESSION;
+      {
+        if (*lastError == ERR_OK)
+          *lastError = ERR_WRONG_EXPRESSION;
+      }
     }
   free(string);
   while (operations->depth_)

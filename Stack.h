@@ -2,16 +2,29 @@
 #include <stdlib.h>
 typedef enum
 {
-  ERR_OK, ERR_NOT_ENOUGH_MEMORY, ERR_WRONG_EXPRESSION,
+  ERR_OK, ERR_NOT_ENOUGH_MEMORY, ERR_WRONG_EXPRESSION, ERR_INVALID_OP_PROCESSING, ERR_BRACKETS, ERR_INVALID_B_OP,
+  ERR_READING_NUM, ERR_INF_NAN, ERR_INCORRECT_CONVERT, ERR_INVALID_U_OP, ERR_SC_NOTATION
 } error_t;
 enum Binary_op
 {
-  B_OP_INVALID, B_OP_EXP, B_OP_TIMES, B_OP_DIVIDE, B_OP_PLUS, B_OP_MINUS,
+  B_OP_INVALID = -1, B_OP_EXP, B_OP_TIMES, B_OP_DIVIDE, B_OP_PLUS, B_OP_MINUS,
 };
 enum Unary_op
 {
-  U_OP_INVALID, U_OP_NEG, U_OP_POS, U_OP_SQRT, U_OP_SIN, U_OP_COS, U_OP_TAN, U_OP_CTG, U_OP_ASIN, U_OP_ACOS, U_OP_ATAN,
-  U_OP_LN, U_OP_FLOOR, U_OP_CEIL,
+  U_OP_INVALID = -1,
+  U_OP_NEG,
+  U_OP_POS,
+  U_OP_SQRT,
+  U_OP_SIN,
+  U_OP_COS,
+  U_OP_TAN,
+  U_OP_CTG,
+  U_OP_ASIN,
+  U_OP_ACOS,
+  U_OP_ATAN,
+  U_OP_LN,
+  U_OP_FLOOR,
+  U_OP_CEIL,
 };
 enum Op
 {
@@ -54,12 +67,12 @@ typedef struct Node* node_t;
 struct stack_t
 {
   unsigned int depth_;
-  node_t elements_[42];
+  node_t elements_[150];
 };
 struct opstack_t
 {
   unsigned int depth_;
-  enum Op elements_[42];
+  enum Op elements_[150];
 };
 node_t b_op(node_t left, node_t right, enum Binary_op bin_);
 node_t u_op(node_t only, enum Unary_op un_);
