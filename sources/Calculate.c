@@ -1,4 +1,5 @@
-#include "Calculate.h"
+#include "../headers/Calculate.h"
+#include "../headers/Operations.h"
 double sum(double left, double right)
 {
   return (left + right);
@@ -27,20 +28,6 @@ double ctg(double only)
 {
   return (cos(only) / sin(only));
 }
-double (* UOPS[])(double) = {
-    neg, pos, sqrt,
-    sin, cos, tan,
-    ctg, asin, acos,
-    atan, log, floor,
-    ceil
-};
-double (* BOPS[])(double, double) = {
-    pow,
-    mul,
-    din,
-    sum,
-    sub
-};
 double Calculate(node_t node, error_t* lastError)
 {
   if (node->type_ == NUM && *lastError == ERR_OK)
