@@ -4,7 +4,6 @@
  * \author Viktor Tiulpin <viktor@tiulpin.me>
  * \version 0.9
  */
-
 /**
  * Function that creates nodes of unary and binary operations and pushes them to Operand stack.
  * \param[in] operands Operand stack

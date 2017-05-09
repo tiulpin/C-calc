@@ -7,7 +7,6 @@
  * Converts math expression to Reverse-Polish-Notation using Shunting-yard algorithm and evaluates them.
  * https://en.wikipedia.org/wiki/Shunting-yard_algorithm
  */
-
 /**
  * Function that returns sum of two operands.
  * \param[in] left Left operand
@@ -37,19 +36,19 @@ double mul(double left, double right);
  */
 double din(double left, double right);
 /**
- * Function that returns negative value of input operand.
+ * Function that returns negative value of the input operand.
  * \param[in] only Operand
  * \return double Result of evaluation
  */
 double neg(double only);
 /**
- * Function that returns value of input operand.
+ * Function that returns value of the input operand.
  * \param[in] only Operand
  * \return double Result of evaluation
  */
 double pos(double only);
 /**
- * Function that returns ctan of input operand.
+ * Function that returns ctan of the input operand.
  * \param[in] left Left operand
  * \return double Result of evaluation
  */

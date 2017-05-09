@@ -9,46 +9,49 @@
  * https://en.wikipedia.org/wiki/Shunting-yard_algorithm
  */
 /**
- * Function to read string dynamically from input stream symbol-by-symbol.
- * \param[in] in Input stream
+ * Function to read string dynamically from the input stream symbol-by-symbol.
+ * \param[in] in The input stream
  * \param[out] lastError Error code
- * \return A string from input
+ * \return A string from the input
  */
 char* ReadLine(FILE* in, error_t* lastError)
 {
   char* buffer = NULL;
-  char* line = (char*) malloc(sizeof(char));
-  if (line == NULL) /* checking malloc */
+  char* string = (char*) malloc(sizeof(char));
+  int index = 0;
+  int tmp = fgetc(in);
+  if (tmp == EOF)
+  {
+    free(string);
+    return NULL;
+  }
+  if (string == NULL) /* checking malloc */
   {
     *lastError = ERR_NOT_ENOUGH_MEMORY;
-    return NULL;
+    while ((tmp = fgetc(in)) != EOF && tmp != '\0' && tmp != '\n')
+      return NULL;
   }
-  int index = 0;
-  line[index] = (char) fgetc(in);
-  if (line[index] == EOF)
+  string[index] = (char) tmp;
+  while (string[index] != '\0' && string[index] != '\n' && string[index] != EOF)
   {
-    free(line);
-    return NULL;
-  }
-  while (line[index] != '\n')
-  {
-    if (line[index] == EOF)
-      break;
-    index++;
-    buffer = (char*) realloc(line, sizeof(char) * (index + 1));
+    buffer = (char*) realloc(string, sizeof(char) * (++index + 1));
     if (buffer == NULL)
     {
-      line[index] = '\0';
+      string[index] = '\0';
+      free(string);
+      tmp = (char) fgetc(in);
+      while (tmp != '\n' && tmp != EOF && tmp != '\0')
+        tmp = (char) fgetc(in);
       *lastError = ERR_NOT_ENOUGH_MEMORY;
-      free(line);
-      return line;
+      return NULL;
     }
     else
-      line = buffer;
-    line[index] = (char) fgetc(in);
+      string = buffer;
+    string[index] = (char) fgetc(in);
   }
-  line[index] = '\0';
-  return line;
+  if (string[index] == '\n' || string[index] == EOF)
+    string[index] = '\0';
+  return string;
 }
 int main(int argc, char const* argv[])
 {
@@ -69,7 +72,6 @@ int main(int argc, char const* argv[])
       continue;
     }
     ProcessLine(line, &lastError);
-    free(line);
   }
   if (in != stdin)
     fclose(in);

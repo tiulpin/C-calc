@@ -1,4 +1,5 @@
 #include "../headers/Stack.h"
+#include <time.h>
 node_t Num(double number)
 {
   node_t node = (node_t) malloc(sizeof(struct Node));

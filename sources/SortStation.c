@@ -4,7 +4,7 @@
 char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
 {
   int current = 0;
-  char* copy = malloc(sizeof(char));
+  char* copy = (char*) malloc(sizeof(char));
   char* buffer = NULL;
   if (copy == NULL) /* checking malloc */
     *lastError = ERR_NOT_ENOUGH_MEMORY;
@@ -12,26 +12,6 @@ char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
       && (!isdigit(string[*index + 1]) || string[*index + 1] == '\0'))) /* wrong number with point */
     *lastError = ERR_SC_NOTATION;
   if (IsOperation && *lastError == ERR_OK)
-  {
-    if (string[*index] == '-')
-    {
-      while (string[*index] == '-' && *lastError == ERR_OK)
-      {
-        copy[current] = string[(*index)++];
-        buffer = (char*) realloc(copy, sizeof(char) * (++current + 1));
-        if (buffer == NULL)
-        {
-          copy[current] = '\0';
-          free(copy);
-          *lastError = ERR_NOT_ENOUGH_MEMORY;
-          return NULL;
-        }
-        else
-          copy = buffer;
-      }
-    }
-    else
-    {
       while (isalpha(string[*index]) && *lastError == ERR_OK)
       {
         copy[current] = string[(*index)++];
@@ -46,23 +26,22 @@ char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
         else
           copy = buffer;
       }
-    }
-  }
   else if (*lastError == ERR_OK)
   {
-    int was_d = 0; /*dot check*/
-    int was_e = 0; /*e check*/
-    int was_s = 0; /*sign check*/
+    int was_d = 0; /* dot check */
+    int was_e = 0; /* e check */
+    int was_s = 0; /* sign check */
     while (((isdigit(string[*index]) || string[*index] == '.' || string[*index] == 'e' || string[*index] == 'E' ||
         string[*index] == '+' || string[*index] == '-') && *lastError == ERR_OK) &&
         !((was_e && was_s && !isdigit(string[*index]) ||
             !was_e && !(isdigit(string[*index])) && (string[*index] != 'e') && string[*index] != '.') ||
             (was_e && isdigit(copy[current - 1]) && (string[*index] != '+' || string[*index] != '-')
-                && !isdigit(string[*index])))) //TODO: I'll rewrite this soon, looks bad, !
+                && !isdigit(string[*index])))) //TODO: I'll rewrite this soon, looks bad, but works, Carl!
     {
-      copy[current] = string[(*index)++]; /* add symbol from input line to number and increase index */
-      if (string[*index] == 'E')
+      copy[current] = string[(*index)++]; /* add symbol from the input line to number and increase index */
+      if (string[*index] == 'E') /* to lowercase */
         string[*index] = 'e';
+
       //check double symbols
       if (copy[current] == '.') /* double point check */
         if (!was_d)
@@ -90,12 +69,13 @@ char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
         else
           *lastError = ERR_SC_NOTATION;
       //
-      buffer = (char*) realloc(copy, sizeof(char) * (++current + 1));
+
+      buffer = (char*) realloc(copy, sizeof(char) * (++current + 1)); //CHECK
       if (buffer == NULL)
       {
         copy[current] = '\0';
-        free(copy);
         *lastError = ERR_NOT_ENOUGH_MEMORY;
+        free(copy);
         return NULL;
       }
       else
@@ -104,60 +84,53 @@ char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
     if (was_e && !isdigit(copy[current - 1])) /* check cases like 1e1+ */
       *lastError = ERR_SC_NOTATION;
   }
-  copy[current] = 0; /* terminates the string */
+  if (copy)
+    copy[current] = 0; /* terminates the string */
   (*index)--;
   return copy;
 }
 enum Binary_op ToBinary_op(enum Op op)
 {
-  int i;
+  int index;
   enum Op OP[] = {PLUS, MINUS, TIMES, DIVIDE, BEXP};
   enum Binary_op BOP[] = {B_OP_PLUS, B_OP_MINUS, B_OP_TIMES, B_OP_DIVIDE, B_OP_EXP};
-  for (i = 0; i < 5; i++)
-    if (op == OP[i])
-      return BOP[i];
+  for (index = 0; index < 5; index++)
+    if (op == OP[index])
+      return BOP[index];
   return B_OP_INVALID;
 }
 enum Unary_op ToUnary_op(enum Op op)
 {
-  int i;
+  int index;
   enum Op OP[] = {NEG, POS, SQRT, SIN, COS, TAN, CTG, ASIN, ACOS, ATAN, LN, FLOOR, CEIL};
   enum Unary_op UOP[] =
       {U_OP_NEG, U_OP_POS, U_OP_SQRT, U_OP_SIN, U_OP_COS, U_OP_TAN, U_OP_CTG, U_OP_ASIN, U_OP_ACOS, U_OP_ATAN, U_OP_LN,
        U_OP_FLOOR, U_OP_CEIL};
-  for (i = 0; i < 13; i++)
-    if (op == OP[i])
-      return UOP[i];
+  for (index = 0; index < 13; index++)
+    if (op == OP[index])
+      return UOP[index];
   return U_OP_INVALID;
 }
 enum Op DefineBinaryOp(char op)
 {
-  int i;
+  int index;
   enum Op BOP[] = {PLUS, MINUS, TIMES, DIVIDE, BEXP};
   char symbol[] = {'+', '-', '*', '/', '^'};
-  for (i = 0; i < 5; i++)
-    if (op == symbol[i])
-      return BOP[i];
+  for (index = 0; index < 5; index++)
+    if (op == symbol[index])
+      return BOP[index];
   return INVALID;
 }
 enum Op DefineUnaryOp(char* op)
 {
-  int i;
+  int index;
   char* word[] = {"sqrt", "sin", "cos", "tg", "ctg", "arcsin", "arccos", "arctg", "ln", "floor", "ceil"};
   enum Op UOP[] = {SQRT, SIN, COS, TAN, CTG, ASIN, ACOS, ATAN, LN, FLOOR, CEIL};
   if (op == NULL)
     return INVALID;
-  if (*op == '+')
-    return POS;
-  if (*op == '-')
-  {
-    if (strlen(op) & 1)
-      return NEG;
-    return POS;
-  }
-  for (i = 0; i < 11; i++)
-    if (strcmp(op, word[i]) == 0)
-      return UOP[i];
+  for (index = 0; index < 11; index++)
+    if (strcmp(op, word[index]) == 0)
+      return UOP[index];
   return INVALID;
 }
 void Process(struct stack_t* operands, struct opstack_t* operations, error_t* lastError)
@@ -225,10 +198,11 @@ node_t Convert(char* string, error_t* lastError)
   char* copy;
   enum Op cur_op;
   int mayunary = 1;
+  int negcount; /* storing number of unary minus */
   struct opstack_t* operations = InitOperations();
   struct stack_t* operands = InitOperands();
   for (index = 0; string[index] != 0 && *lastError == ERR_OK; ++index)
-    if (isgraph(string[index]))
+    if (isgraph(string[index])) /* ignores space symbols */
     {
       if (string[index] == '(')
       {
@@ -277,17 +251,26 @@ node_t Convert(char* string, error_t* lastError)
         if (mayunary
             && (string[index] == '+' || string[index] == '-' || isalpha(string[index]))) /* is unary operation? */
         {
-          if (string[index] == '+')
+          if (string[index] == '+') /* ignores unary plus */
             continue;
-          copy = ReadOp(string, &index, TRUE, lastError);
-          if (copy == NULL)
-            break;
-          cur_op = DefineUnaryOp(copy);
-          free(copy);
-          if (cur_op == INVALID)
+          for (negcount = 0; string[index++] == '-'; negcount++); /* counts unary minuses */
+          if (negcount)
+            if (negcount & 1)
+              cur_op = NEG;
+            else
+              cur_op = POS;
+          else /* reads functions */
           {
-            *lastError = ERR_INVALID_U_OP;
-            break;
+            copy = ReadOp(string, &index, TRUE, lastError);
+            if (copy == NULL)
+              break;
+            cur_op = DefineUnaryOp(copy);
+            free(copy);
+            if (cur_op == INVALID)
+            {
+              *lastError = ERR_INVALID_U_OP;
+              break;
+            }
           }
         }
         else
@@ -327,6 +310,7 @@ node_t Convert(char* string, error_t* lastError)
             free(copy);
           if (*lastError == ERR_OK)
             *lastError = ERR_READING_NUM;
+          break;
         }
       }
       else if (*lastError == ERR_OK)

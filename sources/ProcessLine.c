@@ -11,11 +11,12 @@ void ProcessLine(char* line, error_t* lastError)
 {
   int index;
   double result = 0;
-  node_t expression = NULL;
+  node_t expression;
   for (index = 0; line[index] != 0 && isspace(line[index]); index++); /* count spaces to skip them */
-  if ((line[index] == '/' && line[index + 1] == '/') || line[index] == '\0') /* do not need to calculate //commentary */
+  if (line[index] == '/' && line[index + 1] == '/' || line[index] == '\0') /* do not need to calculate //commentary */
   {
     puts(line);
+    free(line);
     return;
   }
   printf("%s == ", line);
@@ -34,8 +35,10 @@ void ProcessLine(char* line, error_t* lastError)
     if (result == -0) /* it can be -0, should be corrected */
       result = 0;
     printf("%lg\n", result);
+    free(line);
     return;
   }
+  free(line);
   ReportError(*lastError);
   *lastError = ERR_OK;
 }

@@ -29,7 +29,12 @@ typedef enum
 } bool_t;
 enum Binary_op
 {
-  B_OP_INVALID = -1, B_OP_EXP, B_OP_TIMES, B_OP_DIVIDE, B_OP_PLUS, B_OP_MINUS,
+  B_OP_INVALID = -1,
+  B_OP_EXP,
+  B_OP_TIMES,
+  B_OP_DIVIDE,
+  B_OP_PLUS,
+  B_OP_MINUS,
 };
 enum Unary_op
 {
@@ -46,8 +51,7 @@ enum Unary_op
   U_OP_ATAN,
   U_OP_LN,
   U_OP_FLOOR,
-  U_OP_CEIL,
-  U_OP_LOG
+  U_OP_CEIL
 };
 enum Op
 {
@@ -70,8 +74,7 @@ enum Op
   DIVIDE,
   PLUS,
   MINUS,
-  OPAR,
-  LOG
+  OPAR
 };
 enum Node_type
 {
