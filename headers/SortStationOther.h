@@ -1,9 +1,13 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "Stack.h"
 /**
  * \file SortStationOther.h
  * \author Viktor Tiulpin <viktor@tiulpin.me>
  * \version 0.9
  */
+
 /**
  * Function that creates nodes of unary and binary operations and pushes them to Operand stack.
  * \param[in] operands Operand stack

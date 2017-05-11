@@ -1,17 +1,20 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../headers/ProcessLine.h"
 #include "../headers/SortStation.h"
 #include "../headers/Calculate.h"
-void ReportError(error_t lastError)
+void ReportError(error_t lastError, char* line)
 {
   const char const
       * error_list[] = {"OK", "MEM", "EXPR", "OP", "()", "B_OP", "NUM", "INF/NAN", "CONVERT", "U_OP", "SC_N"};
-  printf("ERROR: %s\n", error_list[lastError]);
+  printf("ERROR: %s | %s \n", error_list[lastError], line);
 }
 void ProcessLine(char* line, error_t* lastError)
 {
   int index;
   double result = 0;
-  node_t expression;
+  node_t expression = NULL;
   for (index = 0; line[index] != 0 && isspace(line[index]); index++); /* count spaces to skip them */
   if (line[index] == '/' && line[index + 1] == '/' || line[index] == '\0') /* do not need to calculate //commentary */
   {
@@ -38,7 +41,7 @@ void ProcessLine(char* line, error_t* lastError)
     free(line);
     return;
   }
+  ReportError(*lastError, line);
   free(line);
-  ReportError(*lastError);
   *lastError = ERR_OK;
 }

@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #pragma warning(disable:4996) /* disables Compiler Warning (level 3) C4996 to pass tests */
 #include "../headers/ProcessLine.h"
 /**
@@ -14,31 +17,38 @@
  * \param[out] lastError Error code
  * \return A string from the input
  */
+
 char* ReadLine(FILE* in, error_t* lastError)
 {
   char* buffer = NULL;
-  char* string = (char*) malloc(sizeof(char));
+  char* line = (char*) malloc(sizeof(char));
+  int tmp;
   int index = 0;
-  int tmp = fgetc(in);
+  tmp = fgetc(in);
   if (tmp == EOF)
   {
-    free(string);
+    free(line);
     return NULL;
   }
-  if (string == NULL) /* checking malloc */
+  if (line == NULL) /* checking malloc */
   {
     *lastError = ERR_NOT_ENOUGH_MEMORY;
-    while ((tmp = fgetc(in)) != EOF && tmp != '\0' && tmp != '\n')
-      return NULL;
+    while (tmp != '\n' && tmp != EOF)
+    {
+      tmp = (char) fgetc(in);
+      if (tmp == EOF)
+        break;
+    }
+    return NULL;
   }
-  string[index] = (char) tmp;
-  while (string[index] != '\0' && string[index] != '\n' && string[index] != EOF)
+  line[index] = (char) tmp;
+  while (line[index] != '\n' && line[index] != (char) EOF)
   {
-    buffer = (char*) realloc(string, sizeof(char) * (++index + 1));
+    buffer = (char*) realloc(line, sizeof(char) * (++index + 1));
     if (buffer == NULL)
     {
-      string[index] = '\0';
-      free(string);
+      line[index] = '\0';
+      free(line);
       tmp = (char) fgetc(in);
       while (tmp != '\n' && tmp != EOF && tmp != '\0')
         tmp = (char) fgetc(in);
@@ -46,12 +56,12 @@ char* ReadLine(FILE* in, error_t* lastError)
       return NULL;
     }
     else
-      string = buffer;
-    string[index] = (char) fgetc(in);
+      line = buffer;
+    line[index] = (char) fgetc(in);
   }
-  if (string[index] == '\n' || string[index] == EOF)
-    string[index] = '\0';
-  return string;
+  if (line[index] == '\n' || line[index] == (char) EOF)
+    line[index] = '\0';
+  return line;
 }
 int main(int argc, char const* argv[])
 {
@@ -67,7 +77,7 @@ int main(int argc, char const* argv[])
   {
     if (lastError != ERR_OK)
     {
-      ReportError(lastError);
+      ReportError(lastError, "");
       lastError = ERR_OK;
       continue;
     }

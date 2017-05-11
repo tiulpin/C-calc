@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <string.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -20,4 +23,4 @@ void ProcessLine(char* line, error_t* lastError);
  * Function that reports errors.
  * \param[in] codeerror Error code.
  */
-void ReportError(error_t lastError);
+void ReportError(error_t lastError, char* line);

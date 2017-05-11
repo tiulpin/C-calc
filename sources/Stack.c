@@ -1,5 +1,7 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../headers/Stack.h"
-#include <time.h>
 node_t Num(double number)
 {
   node_t node = (node_t) malloc(sizeof(struct Node));

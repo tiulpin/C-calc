@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../headers/Calculate.h"
 #include "../headers/Operations.h"
 double sum(double left, double right)
@@ -30,18 +33,15 @@ double ctg(double only)
 }
 double Calculate(node_t node, error_t* lastError)
 {
-  if (*lastError == ERR_OK && node != NULL)
+  if (node->type_ == NUM && *lastError == ERR_OK)
   {
-    if (node->type_ == NUM)
-    {
-      if (isinf(node->number_) || isnan(node->number_))
-        *lastError = ERR_INF_NAN;
-      return node->number_;
-    }
-    if (node->type_ == B_OP)
-      return BOPS[node->bin_](Calculate(node->left, lastError), Calculate(node->right, lastError));
-    else if (node->type_ == U_OP)
-      return UOPS[node->un_](Calculate(node->only, lastError));
+    if (isinf(node->number_) || isnan(node->number_))
+      *lastError = ERR_INF_NAN;
+    return node->number_;
   }
+  if (node->type_ == B_OP && *lastError == ERR_OK)
+    return BOPS[node->bin_](Calculate(node->left, lastError), Calculate(node->right, lastError));
+  else if (node->type_ == U_OP && *lastError == ERR_OK)
+    return UOPS[node->un_](Calculate(node->only, lastError));
   return NAN;
 }
