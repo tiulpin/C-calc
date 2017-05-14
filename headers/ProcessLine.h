@@ -23,4 +23,4 @@ void ProcessLine(char* line, error_t* lastError);
  * Function that reports errors.
  * \param[in] codeerror Error code.
  */
-void ReportError(error_t lastError, char* line);
+void ReportError(error_t lastError);

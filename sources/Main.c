@@ -47,12 +47,10 @@ char* ReadLine(FILE* in, error_t* lastError)
     buffer = (char*) realloc(line, sizeof(char) * (++index + 1));
     if (buffer == NULL)
     {
-      line[index] = '\0';
-      free(line);
+      *lastError = ERR_NOT_ENOUGH_MEMORY;
       tmp = (char) fgetc(in);
       while (tmp != '\n' && tmp != EOF && tmp != '\0')
         tmp = (char) fgetc(in);
-      *lastError = ERR_NOT_ENOUGH_MEMORY;
       return NULL;
     }
     else
@@ -77,11 +75,12 @@ int main(int argc, char const* argv[])
   {
     if (lastError != ERR_OK)
     {
-      ReportError(lastError, "");
+      ReportError(lastError);
       lastError = ERR_OK;
       continue;
     }
-    ProcessLine(line, &lastError);
+    else
+      ProcessLine(line, &lastError);
   }
   if (in != stdin)
     fclose(in);

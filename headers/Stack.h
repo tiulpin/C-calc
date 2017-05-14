@@ -50,7 +50,6 @@ enum Unary_op
   U_OP_LN,
   U_OP_FLOOR,
   U_OP_CEIL,
-  U_OP_LOG
 };
 enum Op
 {
@@ -74,7 +73,6 @@ enum Op
   PLUS,
   MINUS,
   OPAR,
-  LOG
 };
 enum Node_type
 {
@@ -115,17 +113,17 @@ node_t b_op(node_t left, node_t right, enum Binary_op bin_);
  */
 node_t u_op(node_t only, enum Unary_op un_);
 /**
- * Function that pops operand node from operand stack.
- * \param[out] stack Stack of operands
- * \return node expression
- */
-node_t Pop(struct stack_t* stack);
-/**
  * Function that converts number to number node.
  * \param[in] number Number
  * \return node expression
  */
 node_t Num(double number);
+/**
+ * Function that pops operand node from operand stack.
+ * \param[out] stack Stack of operands
+ * \return node expression
+ */
+node_t Pop(struct stack_t* stack);
 /**
  * Function that appends operation enum to Operation stack.
  * \param[out] stack Stack of operations

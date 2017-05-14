@@ -4,11 +4,11 @@
 #include "../headers/ProcessLine.h"
 #include "../headers/SortStation.h"
 #include "../headers/Calculate.h"
-void ReportError(error_t lastError, char* line)
+void ReportError(error_t lastError)
 {
   const char const
       * error_list[] = {"OK", "MEM", "EXPR", "OP", "()", "B_OP", "NUM", "INF/NAN", "CONVERT", "U_OP", "SC_N"};
-  printf("ERROR: %s | %s \n", error_list[lastError], line);
+  printf("ERROR: %s \n", error_list[lastError]);
 }
 void ProcessLine(char* line, error_t* lastError)
 {
@@ -41,7 +41,7 @@ void ProcessLine(char* line, error_t* lastError)
     free(line);
     return;
   }
-  ReportError(*lastError, line);
+  ReportError(*lastError);
   free(line);
   *lastError = ERR_OK;
 }

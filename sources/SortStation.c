@@ -4,13 +4,18 @@
 #define _USE_MATH_DEFINES
 #include "../headers/SortStation.h"
 #include "../headers/SortStationOther.h"
+//TODO: ReadOp -- fix code and make it clean
 char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
 {
   int current = 0;
   char* copy = malloc(sizeof(char));
   char* buffer = NULL;
-  if (copy == NULL) /* checking malloc */
+  if (copy == NULL)
+  {
     *lastError = ERR_NOT_ENOUGH_MEMORY;
+    return NULL;
+  } /* checking malloc */
+
   if (*lastError == ERR_OK && (string[*index] == '.'
       && (!isdigit(string[*index + 1]) || string[*index + 1] == '\0'))) /* wrong number with point */
     *lastError = ERR_SC_NOTATION;
@@ -24,8 +29,6 @@ char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
         buffer = (char*) realloc(copy, sizeof(char) * (++current + 1));
         if (buffer == NULL)
         {
-          copy[current] = '\0';
-          free(copy);
           *lastError = ERR_NOT_ENOUGH_MEMORY;
           return NULL;
         }
@@ -41,8 +44,6 @@ char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
         buffer = (char*) realloc(copy, sizeof(char) * (++current + 1));
         if (buffer == NULL)
         {
-          copy[current] = '\0';
-          free(copy);
           *lastError = ERR_NOT_ENOUGH_MEMORY;
           return NULL;
         }
@@ -60,7 +61,7 @@ char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
         string[*index] == '+' || string[*index] == '-') && *lastError == ERR_OK) &&
         !((was_e && was_s && !isdigit(string[*index]) ||
             !was_e && !(isdigit(string[*index])) && (string[*index] != 'e') && string[*index] != '.') ||
-            (was_e && isdigit(copy[current - 1]) && (string[*index] != '+' && string[*index] != '-')
+            (was_e && isdigit(copy[current - 1]) && (string[*index] != '+' || string[*index] != '-')
                 && !isdigit(string[*index])))) //TODO: I'll rewrite this soon, looks bad, but works, Carl!
     {
       copy[current] = string[(*index)++]; /* add symbol from the input line to number and increase index */
@@ -96,9 +97,7 @@ char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
       buffer = (char*) realloc(copy, sizeof(char) * (++current + 1));
       if (buffer == NULL)
       {
-        copy[current] = '\0';
         *lastError = ERR_NOT_ENOUGH_MEMORY;
-        free(copy);
         return NULL;
       }
       else
@@ -193,6 +192,11 @@ void Process(struct stack_t* operands, struct opstack_t* operations, error_t* la
   case FLOOR:
   case CEIL:
   {
+    if (operands->depth_ == 0)
+    {
+      *lastError = ERR_INVALID_OP_PROCESSING;
+      return;
+    }
     node_t only = Pop(operands);
     node_t new_node = u_op(only, ToUnary_op(op));
     if (new_node == NULL)
@@ -223,6 +227,7 @@ void Process(struct stack_t* operands, struct opstack_t* operations, error_t* la
       return;
     }
     Append(operands, new_node);
+    return;
   }
   default:
     *lastError = ERR_INVALID_OP_PROCESSING;
@@ -289,8 +294,7 @@ node_t Convert(char* string, error_t* lastError)
         }
         else
           *lastError = ERR_BRACKETS;
-      else if (IsOperatorOrConst(string[index])
-          && string[index + 1] != '\0') /*checks operators or constants like pi or e*/
+      else if (IsOperatorOrConst(string[index])) /*checks operators or constants like pi or e*/
       {
         if ((string[index] == 'p' && string[index + 1] == 'i') || string[index] == 'e')
         {
@@ -306,18 +310,20 @@ node_t Convert(char* string, error_t* lastError)
           }
           Append(operands, C);
           if (C->number_ == M_PI)
-            index++; /*pi - two symbols, not one like e*/
+            index++; /*'pi' - two symbols, not one (not 'e')*/
           mayunary = 0;
           continue;
         }
-        if (mayunary
-            && (string[index] == '+' || string[index] == '-' || isalpha(string[index]))) /* is unary operation? */
+        if (mayunary && (string[index] == '+' || string[index] == '-' || isalpha(string[index]))) /* is unary? */
         {
           if (string[index] == '+')
             continue;
           copy = ReadOp(string, &index, TRUE, lastError);
           if (copy == NULL)
-            break;
+          {
+            *lastError = ERR_NOT_ENOUGH_MEMORY;
+            return NULL;
+          }
           cur_op = DefineUnaryOp(copy);
           free(copy);
           if (cur_op == INVALID)
@@ -345,6 +351,11 @@ node_t Convert(char* string, error_t* lastError)
       else if (isdigit(string[index]) || string[index] == '.')
       {
         copy = ReadOp(string, &index, FALSE, lastError);
+        if (copy == NULL)
+        {
+          *lastError = ERR_NOT_ENOUGH_MEMORY;
+          return NULL;
+        }
         if (*lastError == ERR_OK)
         {
           node_t number = Num(atof(copy));
@@ -352,15 +363,14 @@ node_t Convert(char* string, error_t* lastError)
           if (number == NULL)
           {
             *lastError = ERR_NOT_ENOUGH_MEMORY;
-            break;
+            return NULL;
           }
           Append(operands, number);
           mayunary = 0;
         }
         else
         {
-          if (copy != NULL)
-            free(copy);
+          free(copy);
           if (*lastError == ERR_OK)
             *lastError = ERR_READING_NUM;
         }
