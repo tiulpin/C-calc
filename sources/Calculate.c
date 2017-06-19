@@ -22,7 +22,7 @@ double din(double left, double right)
 double neg(double only)
 {
   return -only;
-}
+}  
 double pos(double only)
 {
   return only;
