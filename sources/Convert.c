@@ -2,42 +2,20 @@
 
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #define _USE_MATH_DEFINES
-#include "../headers/SortStation.h"
-#include "../headers/SortStationOther.h"
-//TODO: ReadOp -- fix code and make it clean
-char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
+#include "../headers/Convert.h"
+#include "../headers/ConvertHelp.h"
+char* ReadOp(const char* string, int* index, bool_t IsOperation, error_t* lastError)
 {
   int current = 0;
   char* copy = malloc(sizeof(char));
-  char* buffer = NULL;
   if (copy == NULL)
   {
     *lastError = ERR_NOT_ENOUGH_MEMORY;
     return NULL;
-  } /* checking malloc */
-
-  if (*lastError == ERR_OK && (string[*index] == '.'
-      && (!isdigit(string[*index + 1]) || string[*index + 1] == '\0'))) /* wrong number with point */
-    *lastError = ERR_SC_NOTATION;
-  if (IsOperation && *lastError == ERR_OK)
+  }
+  char* buffer = NULL;
+  if (IsOperation)
   {
-    if (string[*index] == '-')
-    {
-      while (string[*index] == '-' && *lastError == ERR_OK)
-      {
-        copy[current] = string[(*index)++];
-        buffer = (char*) realloc(copy, sizeof(char) * (++current + 1));
-        if (buffer == NULL)
-        {
-          *lastError = ERR_NOT_ENOUGH_MEMORY;
-          return NULL;
-        }
-        else
-          copy = buffer;
-      }
-    }
-    else
-    {
       while (isalpha(string[*index]) && *lastError == ERR_OK)
       {
         copy[current] = string[(*index)++];
@@ -47,67 +25,36 @@ char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError)
           *lastError = ERR_NOT_ENOUGH_MEMORY;
           return NULL;
         }
-        else
-          copy = buffer;
+        copy = buffer;
       }
-    }
   }
-  else if (*lastError == ERR_OK)
+  else
   {
-    int was_d = 0; /*dot check*/
-    int was_e = 0; /*e check*/
-    int was_s = 0; /*sign check*/
-    while (((isdigit(string[*index]) || string[*index] == '.' || string[*index] == 'e' || string[*index] == 'E' ||
-        string[*index] == '+' || string[*index] == '-') && *lastError == ERR_OK) &&
-        !((was_e && was_s && !isdigit(string[*index]) ||
-            !was_e && !(isdigit(string[*index])) && (string[*index] != 'e') && string[*index] != '.') ||
-            (was_e && isdigit(copy[current - 1]) && (string[*index] != '+' || string[*index] != '-')
-                && !isdigit(string[*index])))) //TODO: I'll rewrite this soon, looks bad, but works, Carl!
+    bool_t exp = FALSE;
+    bool_t sign = FALSE;
+    while     ((isdigit(string[*index]) || string[*index] == '.' )||
+        ((string[*index] == 'E' || string[*index] == 'e') && !exp)||
+        ((string[*index] == '+' || string[*index] == '-') && !sign))
     {
+      if (string[*index] == 'E' || string[*index] == 'e')
+        exp = TRUE;
+      else if (string[*index] == '+' || string[*index] == '-')
+        sign = TRUE;
       copy[current] = string[(*index)++]; /* add symbol from the input line to number and increase index */
-      if (string[*index] == 'E')
-        string[*index] = 'e';
-      //check double symbols
-      if (copy[current] == '.') /* double point check */
-        if (!was_d)
-        {
-          was_d = 1;
-          if (string[*index] == 'e') /* check cases like 1.e1 */
-            *lastError = ERR_SC_NOTATION;
-        }
-        else
-          *lastError = ERR_SC_NOTATION;
-      else if (copy[current] == 'e') /* double e check */
-      {
-        if (!was_e)
-        {
-          was_e = 1;
-          if (string[*index] == '.') /* check cases like 1e.1 */
-            *lastError = ERR_SC_NOTATION;
-        }
-        else
-          *lastError = ERR_SC_NOTATION;
-      }
-      else if (copy[current] == '+' || copy[current] == '-') /* double sign check */
-        if (!was_s)
-          was_s = 1;
-        else
-          *lastError = ERR_SC_NOTATION;
-      //
       buffer = (char*) realloc(copy, sizeof(char) * (++current + 1));
       if (buffer == NULL)
       {
         *lastError = ERR_NOT_ENOUGH_MEMORY;
         return NULL;
       }
-      else
-        copy = buffer;
+      copy = buffer;
+      if (exp && string[*index] == '.' || string[*index] == '.' && !isdigit(string[*index + 1]))
+        *lastError = ERR_SC_NOTATION;
     }
-    if (was_e && !isdigit(copy[current - 1])) /* check cases like 1e1+ */
+    if (!isdigit(copy[current - 1])) /* check cases like "1e1+" or "1e" or '.' and "..."*/
       *lastError = ERR_SC_NOTATION;
   }
-  if (copy)
-    copy[current] = 0; /* terminates the string */
+  copy[current] = 0; /* terminates the string */
   (*index)--;
   return copy;
 }
@@ -148,23 +95,9 @@ enum Op DefineUnaryOp(char* op)
   int i;
   char* word[] = {"sqrt", "sin", "cos", "tg", "ctg", "arcsin", "arccos", "arctg", "ln", "floor", "ceil"};
   enum Op UOP[] = {SQRT, SIN, COS, TAN, CTG, ASIN, ACOS, ATAN, LN, FLOOR, CEIL};
-  if (op == NULL)
-    return INVALID;
-  switch (*op)
-  {
-  case '+':
-    return POS;
-  case '-':
-  {
-    if (strlen(op) & 1)
-      return NEG;
-    return POS;
-  }
-  default:
-    for (i = 0; i < 11; i++)
-      if (strcmp(op, word[i]) == 0)
-        return UOP[i];
-  }
+  for (i = 0; i < 11; i++)
+    if (strcmp(op, word[i]) == 0)
+      return UOP[i];
   return INVALID;
 }
 void Process(struct stack_t* operands, struct opstack_t* operations, error_t* lastError)
@@ -262,6 +195,7 @@ int GetPriority(enum Op op)
 node_t Convert(char* string, error_t* lastError)
 {
   int index;
+  int minus = 0;
   char* copy;
   enum Op cur_op;
   int mayunary = 1;
@@ -300,9 +234,9 @@ node_t Convert(char* string, error_t* lastError)
         {
           node_t C;
           if (string[index] == 'e')
-            C = Num(M_E);
+            C = num(M_E);
           else
-            C = Num(M_PI);
+            C = num(M_PI);
           if (C == NULL)
           {
             *lastError = ERR_NOT_ENOUGH_MEMORY;
@@ -316,20 +250,38 @@ node_t Convert(char* string, error_t* lastError)
         }
         if (mayunary && (string[index] == '+' || string[index] == '-' || isalpha(string[index]))) /* is unary? */
         {
-          if (string[index] == '+')
-            continue;
-          copy = ReadOp(string, &index, TRUE, lastError);
-          if (copy == NULL)
+          switch (string[index])
           {
-            *lastError = ERR_NOT_ENOUGH_MEMORY;
-            return NULL;
-          }
-          cur_op = DefineUnaryOp(copy);
-          free(copy);
-          if (cur_op == INVALID)
-          {
-            *lastError = ERR_INVALID_U_OP;
-            break;
+          case '+':
+              continue;
+          case '-':
+            {
+              minus++;
+              while (string[index] == '-' && string[index+1] == '-')
+              {
+                index++;
+                minus++;
+              }
+              if (minus & 1)
+                cur_op = NEG;
+              else
+                continue;
+              break;
+            }
+          default:
+            copy = ReadOp(string, &index, TRUE, lastError);
+            if (copy == NULL)
+            {
+              *lastError = ERR_NOT_ENOUGH_MEMORY;
+              return NULL;
+            }
+            cur_op = DefineUnaryOp(copy);
+            free(copy);
+            if (cur_op == INVALID)
+            {
+              *lastError = ERR_INVALID_U_OP;
+              break;
+            }
           }
         }
         else
@@ -358,7 +310,7 @@ node_t Convert(char* string, error_t* lastError)
         }
         if (*lastError == ERR_OK)
         {
-          node_t number = Num(atof(copy));
+          node_t number = num(atof(copy));
           free(copy);
           if (number == NULL)
           {
@@ -382,7 +334,7 @@ node_t Convert(char* string, error_t* lastError)
     Process(operands, operations, lastError);
   if (*lastError == ERR_OK && operands->depth_ == 1 && operations->depth_ == 0)
     return operands->elements_[0];
-  else if (operands->depth_ > 0)
+  if (operands->depth_ > 0)
     for (index = 0; index < operands->depth_; index++)
       Free(operands->elements_[index]);
   return NULL;

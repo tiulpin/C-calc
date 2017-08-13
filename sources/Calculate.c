@@ -33,15 +33,23 @@ double ctg(double only)
 }
 double Calculate(node_t node, error_t* lastError)
 {
-  if (node->type_ == NUM && *lastError == ERR_OK)
+  if (*lastError == ERR_OK)
   {
-    if (isinf(node->number_) || isnan(node->number_))
-      *lastError = ERR_INF_NAN;
-    return node->number_;
+    switch(node->type_)
+    {
+    case NUM:
+    {
+      if (isinf(node->number_) || isnan(node->number_))
+        *lastError = ERR_INF_NAN;
+      return node->number_;
+    }
+    case B_OP:
+      return BOPS[node->bin_](Calculate(node->left, lastError), Calculate(node->right, lastError));
+    case U_OP:
+      return UOPS[node->un_](Calculate(node->only, lastError));
+    default:
+      *lastError = ERR_WRONG_EXPRESSION;
+    }
   }
-  if (node->type_ == B_OP && *lastError == ERR_OK)
-    return BOPS[node->bin_](Calculate(node->left, lastError), Calculate(node->right, lastError));
-  else if (node->type_ == U_OP && *lastError == ERR_OK)
-    return UOPS[node->un_](Calculate(node->only, lastError));
   return NAN;
 }

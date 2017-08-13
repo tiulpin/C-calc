@@ -3,19 +3,7 @@ project(calc-tiulpin)
 set(CMAKE_C_STANDARD 90)
 include_directories(${SOURCE_FILES}sources)
 include_directories(${SOURCE_FILES}headers)
-set(SOURCE_FILES
-        sources/ProcessLine.c
-        sources/SortStation.c
-        sources/Calculate.c
-        sources/Stack.c
-        sources/Main.c
-        headers/SortStationOther.h
-        headers/ProcessLine.h
-        headers/SortStation.h
-        headers/Operations.h
-        headers/Calculate.h
-        headers/Stack.h
-        )
+set(SOURCE_FILES sources/ProcessLine.c sources/Convert.c sources/Calculate.c sources/Stack.c sources/Main.c headers/ConvertHelp.h headers/ProcessLine.h headers/Convert.h headers/Operations.h headers/Calculate.h headers/Stack.h)
 add_executable(calc-tiulpin ${SOURCE_FILES})
 target_link_libraries(calc-tiulpin m)
 include(PVS-Studio.cmake)

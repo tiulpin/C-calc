@@ -114,10 +114,10 @@ node_t b_op(node_t left, node_t right, enum Binary_op bin_);
 node_t u_op(node_t only, enum Unary_op un_);
 /**
  * Function that converts number to number node.
- * \param[in] number Number
+ * \param[in] number number
  * \return node expression
  */
-node_t Num(double number);
+node_t num(double number);
 /**
  * Function that pops operand node from operand stack.
  * \param[out] stack Stack of operands

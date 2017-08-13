@@ -8,16 +8,15 @@
  * \author Viktor Tiulpin <viktor@tiulpin.me>
  * \version 0.9
  * \section DESCRIPTION
- * Converts math expression to Reverse-Polish-Notation using Shunting-yard algorithm and evaluates them.
+ * Converts math expressions to Reverse-Polish-Notation using Shunting-yard algorithm and evaluates them.
  * https://en.wikipedia.org/wiki/Shunting-yard_algorithm
  */
 /**
  * Function to read string dynamically from the input stream symbol-by-symbol.
- * \param[in] in The input stream
+ * \param[in] The input stream
  * \param[out] lastError Error code
  * \return A string from the input
  */
-
 char* ReadLine(FILE* in, error_t* lastError)
 {
   char* buffer = NULL;
@@ -33,7 +32,7 @@ char* ReadLine(FILE* in, error_t* lastError)
   if (line == NULL) /* checking malloc */
   {
     *lastError = ERR_NOT_ENOUGH_MEMORY;
-    while (tmp != '\n' && tmp != EOF)
+    while (tmp != '\n')
     {
       tmp = (char) fgetc(in);
       if (tmp == EOF)
@@ -50,12 +49,12 @@ char* ReadLine(FILE* in, error_t* lastError)
       *lastError = ERR_NOT_ENOUGH_MEMORY;
       tmp = (char) fgetc(in);
       while (tmp != '\n' && tmp != EOF && tmp != '\0')
-        tmp = (char) fgetc(in);
+        tmp = (char)  fgetc(in);
       return NULL;
     }
-    else
-      line = buffer;
+    line = buffer;
     line[index] = (char) fgetc(in);
+
   }
   if (line[index] == '\n' || line[index] == (char) EOF)
     line[index] = '\0';
@@ -79,8 +78,7 @@ int main(int argc, char const* argv[])
       lastError = ERR_OK;
       continue;
     }
-    else
-      ProcessLine(line, &lastError);
+    ProcessLine(line, &lastError);
   }
   if (in != stdin)
     fclose(in);

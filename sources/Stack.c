@@ -3,7 +3,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../headers/Stack.h"
 #include <time.h>
-node_t Num(double number)
+node_t num(double number)
 {
   node_t node = (node_t) malloc(sizeof(struct Node));
   if (node == NULL)
@@ -57,6 +57,7 @@ void Free(node_t node)
     Free(node->right);
     break;
   case U_OP:
+
     Free(node->only);
     break;
   default:

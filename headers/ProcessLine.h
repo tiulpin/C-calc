@@ -21,6 +21,6 @@
 void ProcessLine(char* line, error_t* lastError);
 /**
  * Function that reports errors.
- * \param[in] codeerror Error code.
+ * \param[in] error_t Error code.
  */
 void ReportError(error_t lastError);

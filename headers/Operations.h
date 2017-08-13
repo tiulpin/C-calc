@@ -57,6 +57,6 @@ double pos(double only);
  * \return double Result of evaluation
  */
 double ctg(double only);
-/*Arrays of function pointers*/
+/*Arrays of function pointers for Calculate*/
 double (* UOPS[])(double) = {neg, pos, sqrt, sin, cos, tan, ctg, asin, acos, atan, log, floor, ceil};
 double (* BOPS[])(double, double) = {pow, mul, din, sum, sub};

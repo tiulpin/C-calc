@@ -2,14 +2,8 @@
 
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../headers/ProcessLine.h"
-#include "../headers/SortStation.h"
+#include "../headers/Convert.h"
 #include "../headers/Calculate.h"
-void ReportError(error_t lastError)
-{
-  const char const
-      * error_list[] = {"OK", "MEM", "EXPR", "OP", "()", "B_OP", "NUM", "INF/NAN", "CONVERT", "U_OP", "SC_N"};
-  printf("ERROR: %s \n", error_list[lastError]);
-}
 void ProcessLine(char* line, error_t* lastError)
 {
   int index;
@@ -44,4 +38,10 @@ void ProcessLine(char* line, error_t* lastError)
   ReportError(*lastError);
   free(line);
   *lastError = ERR_OK;
+}
+void ReportError(error_t lastError)
+{
+  const char const
+      * error_list[] = {"OK", "MEM", "EXPR", "OP", "()", "B_OP", "NUM", "INF/NAN", "CONVERT", "U_OP", "SC_N"};
+  printf("ERROR: %s \n", error_list[lastError]);
 }

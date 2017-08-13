@@ -2,7 +2,6 @@
 # 2008-2016 (c) OOO "Program Verification Systems"
 #
 # Version 2
-
 function(pvs_studio_relative_path VAR ROOT FILEPATH)
     set("${VAR}" "${FILEPATH}" PARENT_SCOPE)
     if ("${FILEPATH}" MATCHES "^/.*$")
@@ -272,5 +271,3 @@ function(pvs_studio_add_target)
 
     add_custom_target("${PVS_STUDIO_TARGET}" ${ALL} ${COMMANDS} WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" DEPENDS ${PVS_STUDIO_DEPENDS} "${PVS_STUDIO_LOG}")
 endfunction()
-
-

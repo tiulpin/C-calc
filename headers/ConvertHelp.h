@@ -7,7 +7,6 @@
  * \author Viktor Tiulpin <viktor@tiulpin.me>
  * \version 0.9
  */
-
 /**
  * Function that creates nodes of unary and binary operations and pushes them to Operand stack.
  * \param[in] operands Operand stack
@@ -23,7 +22,7 @@ void Process(struct stack_t* operands, struct opstack_t* operations, error_t* la
  * \param[out] lastError Error code
  * \return char* Result string
  */
-char* ReadOp(char* string, int* index, bool_t IsOperation, error_t* lastError);
+char* ReadOp(const char* string, int* index, bool_t IsOperation, error_t* lastError);
 /**
  * Function that finds in operation stack open parenthesis, for checking balancing of parentheses.
  * \param[in] operations Operation stack
