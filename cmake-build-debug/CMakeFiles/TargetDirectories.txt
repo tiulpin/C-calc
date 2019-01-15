@@ -1,4 +1,0 @@
-/home/tv/Documents/Projects/calc/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/tv/Documents/Projects/calc/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/tv/Documents/Projects/calc/cmake-build-debug/CMakeFiles/pvs.dir
-/home/tv/Documents/Projects/calc/cmake-build-debug/CMakeFiles/calc-tiulpin.dir

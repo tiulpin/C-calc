@@ -1,1 +1,0 @@
-/usr/bin/cc -g   CMakeFiles/calc-tiulpin.dir/sources/ProcessLine.c.o CMakeFiles/calc-tiulpin.dir/sources/Convert.c.o CMakeFiles/calc-tiulpin.dir/sources/Calculate.c.o CMakeFiles/calc-tiulpin.dir/sources/Stack.c.o CMakeFiles/calc-tiulpin.dir/sources/Main.c.o  -o calc-tiulpin -lm 
