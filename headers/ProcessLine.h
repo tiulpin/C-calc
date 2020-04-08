@@ -10,15 +10,16 @@
 #include "Stack.h"
 /**
  * \file ProcessLine.h
- * \author Viktor Tiulpin <viktor@tiulpin.me>
- * \version 0.9
+ * \author Viktor Tiulpin <viktor@tiulp.in>
+ * \version 1.0
  */
+
 /**
  * Function that processes the line: calls Calculate and Convert functions.
  * \param[out] line Expression string
  * \param[out] lastError Error code
  */
-void ProcessLine(char* line, error_t* lastError);
+void ProcessLine(char *line, error_t *lastError);
 /**
  * Function that reports errors.
  * \param[in] error_t Error code.

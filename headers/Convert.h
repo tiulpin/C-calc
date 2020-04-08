@@ -5,8 +5,8 @@
 #include "Stack.h"
 /**
  * \file SortStation.h
- * \author Viktor Tiulpin <viktor@tiulpin.me>
- * \version 0.9
+ * \author Viktor Tiulpin <viktor@tiulp.in>
+ * \version 1.0
  */
 /**
  * Function that converts math expression to Reverse-Polish-Notation using Shunting-yard algorithm.
@@ -14,4 +14,4 @@
  * \param[out] lastError Error code
  * \return node expression
  */
-node_t Convert(char* string, error_t* lastError);
+node_t Convert(char *string, error_t *lastError);

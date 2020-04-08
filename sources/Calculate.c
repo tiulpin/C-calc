@@ -22,7 +22,7 @@ double din(double left, double right)
 double neg(double only)
 {
   return -only;
-}  
+}
 double pos(double only)
 {
   return only;
@@ -31,16 +31,18 @@ double ctg(double only)
 {
   return (cos(only) / sin(only));
 }
-double Calculate(node_t node, error_t* lastError)
+double Calculate(node_t node, error_t *lastError)
 {
   if (*lastError == ERR_OK)
   {
-    switch(node->type_)
+    switch (node->type_)
     {
     case NUM:
     {
       if (isinf(node->number_) || isnan(node->number_))
+      {
         *lastError = ERR_INF_NAN;
+      }
       return node->number_;
     }
     case B_OP:

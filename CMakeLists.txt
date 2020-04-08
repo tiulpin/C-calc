@@ -6,9 +6,3 @@ include_directories(${SOURCE_FILES}headers)
 set(SOURCE_FILES sources/ProcessLine.c sources/Convert.c sources/Calculate.c sources/Stack.c sources/Main.c headers/ConvertHelp.h headers/ProcessLine.h headers/Convert.h headers/Operations.h headers/Calculate.h headers/Stack.h)
 add_executable(calc-tiulpin ${SOURCE_FILES})
 target_link_libraries(calc-tiulpin m)
-include(PVS-Studio.cmake)
-pvs_studio_add_target(calc-tiulpin analyze ALL
-        OUTPUT FORMAT errorfile
-        ANALYZE calc-tiulpin
-        LOG calc-tiulpin.plog
-        LICENSE "/home/tv/Documents/PVS-Studio/PVS-Studio.lic")

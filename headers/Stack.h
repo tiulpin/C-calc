@@ -5,12 +5,13 @@
 #include <stdlib.h>
 /**
  * \file Stack.h
- * \author Viktor Tiulpin <viktor@tiulpin.me>
- * \version 0.9
+ * \author Viktor Tiulpin <viktor@tiulp.in>
+ * \version 1.0
  * \section DESCRIPTION
  * Converts math expression to Reverse-Polish-Notation using Shunting-yard algorithm and evaluates them.
  * https://en.wikipedia.org/wiki/Shunting-yard_algorithm
  */
+
 typedef enum
 {
   ERR_OK,
@@ -83,12 +84,12 @@ struct Node /* Node, which represents number, binary operation or unary operatio
   enum Node_type type_;
   enum Binary_op bin_;
   enum Unary_op un_;
-  struct Node* left;
-  struct Node* right;
-  struct Node* only;
+  struct Node *left;
+  struct Node *right;
+  struct Node *only;
   double number_;
 };
-typedef struct Node* node_t;
+typedef struct Node *node_t;
 struct stack_t /* Operand stack */
 {
   unsigned int depth_;
@@ -123,39 +124,39 @@ node_t num(double number);
  * \param[out] stack Stack of operands
  * \return node expression
  */
-node_t Pop(struct stack_t* stack);
+node_t Pop(struct stack_t *stack);
 /**
  * Function that appends operation enum to Operation stack.
  * \param[out] stack Stack of operations
  * \param[in] op Enum operation
  */
-void Append_op(struct opstack_t* op_stack, enum Op op);
+void Append_op(struct opstack_t *op_stack, enum Op op);
 /**
  * Function that appends operand node to Operand stack.
  * \param[out] stack Stack of operands
  * \param[in] node Operand
  */
-void Append(struct stack_t* stack, node_t node);
+void Append(struct stack_t *stack, node_t node);
 /**
  * Function that appends operation enum to Operation stack.
  * \param[out] stack Stack of operations
  * \return op Enum operation
  */
-enum Op Pop_op(struct opstack_t* op_stack);
+enum Op Pop_op(struct opstack_t *op_stack);
 /**
  * Function that converts math expression to Reverse-Polish-Notation using Shunting-yard algorithm.
  * \param[out] op_stack Operation stack
  * \return enum Operation
  */
-enum Op Back(struct opstack_t* op_stack);
+enum Op Back(struct opstack_t *op_stack);
 /**
  * Function that initializes Operands stack.
  */
-struct opstack_t* InitOperations();
+struct opstack_t *InitOperations();
 /**
  * Function that initializes Operands stack.
  */
-struct stack_t* InitOperands();
+struct stack_t *InitOperands();
 /**
  * Function that frees node.
  * \param[in] node Node

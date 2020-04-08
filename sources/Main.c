@@ -5,22 +5,23 @@
 #include "../headers/ProcessLine.h"
 /**
  * \file Main.c
- * \author Viktor Tiulpin <viktor@tiulpin.me>
- * \version 0.9
+ * \author Viktor Tiulpin <viktor@tiulp.in>
+ * \version 1.0
  * \section DESCRIPTION
  * Converts math expressions to Reverse-Polish-Notation using Shunting-yard algorithm and evaluates them.
  * https://en.wikipedia.org/wiki/Shunting-yard_algorithm
  */
+
 /**
  * Function to read string dynamically from the input stream symbol-by-symbol.
  * \param[in] The input stream
  * \param[out] lastError Error code
  * \return A string from the input
  */
-char* ReadLine(FILE* in, error_t* lastError)
+char *ReadLine(FILE *in, error_t *lastError)
 {
-  char* buffer = NULL;
-  char* line = (char*) malloc(sizeof(char));
+  char *buffer = NULL;
+  char *line = (char *) malloc(sizeof(char));
   int tmp;
   int index = 0;
   tmp = fgetc(in);
@@ -36,20 +37,22 @@ char* ReadLine(FILE* in, error_t* lastError)
     {
       tmp = (char) fgetc(in);
       if (tmp == EOF)
+      {
         break;
+      }
     }
     return NULL;
   }
   line[index] = (char) tmp;
   while (line[index] != '\n' && line[index] != (char) EOF)
   {
-    buffer = (char*) realloc(line, sizeof(char) * (++index + 1));
+    buffer = (char *) realloc(line, sizeof(char) * (++index + 1));
     if (buffer == NULL)
     {
       *lastError = ERR_NOT_ENOUGH_MEMORY;
       tmp = (char) fgetc(in);
       while (tmp != '\n' && tmp != EOF && tmp != '\0')
-        tmp = (char)  fgetc(in);
+        tmp = (char) fgetc(in);
       return NULL;
     }
     line = buffer;
@@ -57,13 +60,15 @@ char* ReadLine(FILE* in, error_t* lastError)
 
   }
   if (line[index] == '\n' || line[index] == (char) EOF)
+  {
     line[index] = '\0';
+  }
   return line;
 }
-int main(int argc, char const* argv[])
+int main(int argc, char const *argv[])
 {
-  FILE* in = stdin;
-  char* line = NULL;
+  FILE *in = stdin;
+  char *line = NULL;
   error_t lastError = ERR_OK;
   if (argc > 1 && (in = fopen(argv[1], "r")) == NULL)
   {
@@ -81,6 +86,8 @@ int main(int argc, char const* argv[])
     ProcessLine(line, &lastError);
   }
   if (in != stdin)
+  {
     fclose(in);
+  }
   return 0;
 }

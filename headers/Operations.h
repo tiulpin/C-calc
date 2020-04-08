@@ -4,8 +4,8 @@
 #include <math.h>
 /**
  * \file Operations.h
- * \author Viktor Tiulpin <viktor@tiulpin.me>
- * \version 0.9
+ * \author Viktor Tiulpin <viktor@tiulp.in>
+ * \version 1.0
  * \section DESCRIPTION
  * Converts math expression to Reverse-Polish-Notation using Shunting-yard algorithm and evaluates them.
  * https://en.wikipedia.org/wiki/Shunting-yard_algorithm
@@ -57,6 +57,6 @@ double pos(double only);
  * \return double Result of evaluation
  */
 double ctg(double only);
-/*Arrays of function pointers for Calculate*/
-double (* UOPS[])(double) = {neg, pos, sqrt, sin, cos, tan, ctg, asin, acos, atan, log, floor, ceil};
-double (* BOPS[])(double, double) = {pow, mul, din, sum, sub};
+/* Arrays of function pointers for Calculate */
+double (*UOPS[])(double) = {neg, pos, sqrt, sin, cos, tan, ctg, asin, acos, atan, log, floor, ceil};
+double (*BOPS[])(double, double) = {pow, mul, din, sum, sub};

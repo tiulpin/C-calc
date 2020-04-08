@@ -4,16 +4,17 @@
 #include "Stack.h"
 /**
  * \file SortStationOther.h
- * \author Viktor Tiulpin <viktor@tiulpin.me>
- * \version 0.9
+ * \author Viktor Tiulpin <viktor@tiulp.in>
+ * \version 1.0
  */
+
 /**
  * Function that creates nodes of unary and binary operations and pushes them to Operand stack.
  * \param[in] operands Operand stack
  * \param[in] operations Operation stack
  * \param[in] lastError Error code
  */
-void Process(struct stack_t* operands, struct opstack_t* operations, error_t* lastError);
+void Process(struct stack_t *operands, struct opstack_t *operations, error_t *lastError);
 /**
  * Function that reads from string unary operation, number (supports scientific notation, like 1e1).
  * \param[in] string String with operation or number
@@ -22,13 +23,13 @@ void Process(struct stack_t* operands, struct opstack_t* operations, error_t* la
  * \param[out] lastError Error code
  * \return char* Result string
  */
-char* ReadOp(const char* string, int* index, bool_t IsOperation, error_t* lastError);
+char *ReadOp(const char *string, int *index, bool_t IsOperation, error_t *lastError);
 /**
  * Function that finds in operation stack open parenthesis, for checking balancing of parentheses.
  * \param[in] operations Operation stack
  * \return bool_t TRUE or FALSE
  */
-bool_t IsOPAR(struct opstack_t* operations);
+bool_t IsOPAR(struct opstack_t *operations);
 /**
  * Function that finds pair for enum Op element in Binary_op elements. It's used in Process function.
  * \param[in] op Operation enum
@@ -52,7 +53,7 @@ enum Op DefineBinaryOp(char op);
  * \param[in] op Operation string
  * \return enum Op Unary operation
  */
-enum Op DefineUnaryOp(char* op);
+enum Op DefineUnaryOp(char *op);
 /**
  * Function that defines unary operation.
  * \param[in] op Operation string
